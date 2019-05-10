@@ -32,6 +32,7 @@ function respawn_power(x, y) {
 setInterval(function(){
   let states = {};
   let connected = io.sockets.clients().connected;
+  let oldPower = power;
 
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
@@ -43,8 +44,6 @@ setInterval(function(){
       let state = states[key];
       let oldX = state.x;
       let oldY = state.y;
-
-      console.log("power is" + power)
 
       if (connected[key].left === 1) {
         if (state.x === 0) {
@@ -110,14 +109,13 @@ setInterval(function(){
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -2;
 
-        power = true
-
+        power = true;
         setTimeout(respawn_power, 30000, pos[0], pos[1]);
 
         io.emit('collect power', pos);
       }
 
-      // // Check for walls to the left
+      // Check for walls to the left
       if (isWall(playerLeftEdge, playerCentreY)) {
         state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
@@ -165,6 +163,22 @@ setInterval(function(){
     }
   }
 
+  if (power !== oldPower) {
+    for (var key in connected) {
+      if (connected.hasOwnProperty(key)) {
+        if (!connected[key].init_called) {
+          continue;
+        }
+
+        let state = connected[key].state;
+
+        if (state.type === "ghost") {
+          state.vulnerable = true;
+        }
+      }
+    }
+  }
+
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
       if (!connected[key].init_called) {
@@ -200,14 +214,33 @@ setInterval(function(){
                     placed = true;
                   }
                 }
-                if (power === false) {
+
+                if ((power) &&
+                    (state.type !== state2.type) &&
+                    ((state.type === "ghost") && (state.vulnerable)) ||
+                    ((state2.type === "ghost") && (state2.vulnerable))) {
+                  if (state.type === "ghost") {
+                    state.x = xSpawn;
+                    state.y = ySpawn;
+                    state.vulnerable = false;
+                    state2.score += 100;
+                  } else {
+                    state2.x = xSpawn;
+                    state2.y = ySpawn;
+                    state2.vulnerable = false;
+                    state.score += 100;
+                  }
+
+                  scores.pacmans += 100;
+                } else {
                   if (state.type === "pacman") {
                     state.x = xSpawn;
                     state.y = ySpawn;
-                  } else {
                     state2.score += 100;
+                  } else {
                     state2.x = xSpawn;
                     state2.y = ySpawn;
+                    state.score += 100;
                   }
 
                   scores.ghosts += 100;
@@ -267,6 +300,7 @@ io.on('connection', function(socket){
   socket.state.type = "pacman";
   socket.state.score = 0;
   socket.state.id = socket.id;
+  socket.state.vulnerable = false;
 
   socket.on('disconnect', function(){
     console.log('User ' + socket.id + ' disconnected');

@@ -198,8 +198,6 @@
 
         socket.on('state', function(states){
           for (var key in states) {
-            // TODO: check for special key for pellets and power pills, and make them visible/invisible using
-            // img.style.visibility = ""/"hidden";
             if (states.hasOwnProperty(key)) {
               let state = states[key];
 
