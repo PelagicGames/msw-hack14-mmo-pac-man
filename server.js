@@ -184,16 +184,18 @@ setInterval(function(){
                     placed = true;
                   }
                 }
-                if (power === false)
+                if (power === false) {
                   if (state.type === "pacman") {
                     state.x = xSpawn;
                     state.y = ySpawn;
                   } else {
-                      state2.score += 100;
-                      state2.x = xSpawn;
-                      state2.y = ySpawn;
+                    state2.score += 100;
+                    state2.x = xSpawn;
+                    state2.y = ySpawn;
                   }
+
                   scores.ghosts += 100;
+                }
               }
             }
           }
