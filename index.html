@@ -144,6 +144,26 @@
                 if (newMaze[j][i] === 1){
                   ctx.fillRect(32*i, 32*j, 32, 32);
                 }
+                else if (newMaze[j][i] === 0) {
+                  let img = document.createElement('img');
+                  img.src = "pellet.png";
+                  img.width = 10;
+                  img.height = 10;
+                  img.style.position = "absolute";
+                  img.style.left = 32*i + 11 + "px";
+                  img.style.top = 32*j + 11 + "px";
+                  $('body')[0].appendChild(img);
+                }
+                else {
+                  let img = document.createElement('img');
+                  img.src = "power.png";
+                  img.width = 20;
+                  img.height = 20;
+                  img.style.position = "absolute";
+                  img.style.left = 32*i + 6 + "px";
+                  img.style.top = 32*j + 6 + "px";
+                  $('body')[0].appendChild(img);
+                }
               }
             }
             maze = true;
