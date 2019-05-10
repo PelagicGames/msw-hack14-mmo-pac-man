@@ -248,7 +248,13 @@
           }
         });
 
-        socket.on('power', function(pos) {
+        socket.on('respawn pellet', function(x, y) {
+          if ($('[id="pellet-' + x + ',' + y + '"]')[0]) {
+            $('[id="pellet-' + x + ',' + y + '"]')[0].style.visibility = "";
+          }
+        });
+
+        socket.on('collect power', function(pos) {
           if ($('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0]) {
             $('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
           }
@@ -265,19 +271,7 @@
           }
         });
 
-        socket.on('respawn pellet', function(x, y) {
-          if ($('[id="pellet-' + x + ',' + y + '"]')[0]) {
-            $('[id="pellet-' + x + ',' + y + '"]')[0].style.visibility = "";
-          }
-        });
-        socket.on('collect power', function(pos) {
-          console.log("COLLECTED", pos);
-          if ($('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0]) {
-            $('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
-          }
-        });
         socket.on('respawn power', function(x, y) {
-          console.log("respawning pellet")
           if ($('[id="power-' + x + ',' + y + '"]')[0]) {
             $('[id="power-' + x + ',' + y + '"]')[0].style.visibility = "";
           }

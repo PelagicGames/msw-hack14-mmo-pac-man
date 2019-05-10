@@ -200,19 +200,13 @@ setInterval(function(){
             }
           }
         }
-
-        // TODO: add collision detection for pellets and power pills
       }
     }
   }
 
-  // TODO: add pellets and power pills under a special key in states
   io.emit('state', states);
   io.emit('score', scores);
 }, 50);
-
-// TODO: create a repeating function to add pellets and power pills
-// (probably as a Boolean matrix indicating whether a pellet is present at a given (row, column))
 
 var maze = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
