@@ -131,8 +131,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('crashed', function(value){
-    console.log(value)
-    if (socket.id === value) {    // TODO: Randomise respawn location
+    if (socket.id === value) {
       socket.state.x = Math.floor(Math.random() * WIDTH);
       socket.state.y = Math.floor(Math.random() * HEIGHT);
     }
