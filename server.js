@@ -137,6 +137,22 @@ setInterval(function(){
         state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
 
+      // Teleport us away if we've been sucked into a wall
+      if (isWall(playerCentreX, playerCentreY)){
+        let placed = false;
+        let xSpawn = 0;
+        let ySpawn = 0;
+
+        while (!placed) {
+          xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+          ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+
+          if (!isWall(xSpawn, ySpawn)) {
+            placed = true;
+          }
+        }
+      }
+
       if (state.x > oldX) {
         state.angle = 0;
       } else if (state.x < oldX) {
