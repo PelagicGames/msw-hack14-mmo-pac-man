@@ -73,7 +73,7 @@ setInterval(function(){
       }
 
       if (connected[key].up === 1) {
-        if (state.type === "pacman") {
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
           state.y -= SPEED;
         } else {
           state.y -= GHOST_SPEED;
