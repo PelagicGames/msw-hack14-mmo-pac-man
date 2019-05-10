@@ -131,9 +131,11 @@ io.on('connection', function(socket){
   });
 
   socket.on('crashed', function(value){
-    // TODO: Randomise respawn location
-    socket.state.x = 200;
-    socket.state.y = 200;
+    console.log(value)
+    if (socket.id === value) {    // TODO: Randomise respawn location
+      socket.state.x = Math.floor(Math.random() * WIDTH);
+      socket.state.y = Math.floor(Math.random() * HEIGHT);
+    }
   });
 
   socket.on('init', function(state){
