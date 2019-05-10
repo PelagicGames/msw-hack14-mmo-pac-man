@@ -124,6 +124,7 @@ setInterval(function(){
 // (probably as a Boolean matrix indicating whether a pellet is present at a given (row, column))
 
 // TODO: create a function to create the initial maze
+var maze = [];
 
 io.on('connection', function(socket){
   console.log('User connected: ' + socket.id);
@@ -168,6 +169,8 @@ io.on('connection', function(socket){
     socket.state.type = state.type;
     socket.init_called = true;
   });
+
+  io.emit('maze', maze);
 });
 
 http.listen(port, function(){
