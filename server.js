@@ -46,7 +46,18 @@ setInterval(function(){
       if (connected[key].down === 1) {
         state.y += SPEED;
       }
-
+      if (state.type === "pacman") {
+          for (var i = 0; i < 30; i++){
+              for (var j = 0; j < 20; j++){
+                if (state.x == 32*i + 11){
+                  if(state.y == 32*j + 11) {
+                    console.log("remove pellet")
+                    io.emit("remove pellet", "i" + i + "j" + j)
+                }
+              }
+            }
+          }
+        }
       if (state.x + PLAYER_WIDTH > WIDTH) {
         state.x = WIDTH - PLAYER_WIDTH;
       }
