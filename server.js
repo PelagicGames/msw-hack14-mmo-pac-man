@@ -149,6 +149,8 @@ setInterval(function(){
             placed = true;
           }
         }
+        state.x = xSpawn;
+        state.y = ySpawn;
       }
 
       if (state.x > oldX) {
