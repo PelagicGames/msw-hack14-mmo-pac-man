@@ -98,14 +98,16 @@ setInterval(function(){
           if (state.type != state2.type) {
             if (Math.abs(state.x - state2.x) < 32) {
               if (Math.abs(state.y - state2.y) < 32) {
-                io.emit('score', "ghosts");
                 if (state.type === "pacman") {
                   state.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
                   state.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
                 } else {
+                  state2.score += 100;
                   state2.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
                   state2.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
                 }
+
+                scores.ghosts += 100;
               }
             }
           }
@@ -119,6 +121,7 @@ setInterval(function(){
 
   // TODO: add pellets and power pills under a special key in states
   io.emit('state', states);
+  io.emit('score', scores);
 }, 50);
 
 // TODO: create a repeating function to add pellets and power pills
@@ -147,6 +150,8 @@ var maze = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
+
+var scores = {"ghosts": 0, "pacmans": 0};
 
 io.on('connection', function(socket){
   console.log('User connected: ' + socket.id);
