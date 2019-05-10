@@ -143,6 +143,7 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log('User ' + socket.id + ' disconnected');
+    io.emit('remove', socket.id);
     // TODO: send down a message to client to remove the img with id socket.id
   });
 
