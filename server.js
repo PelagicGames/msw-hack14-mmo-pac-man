@@ -18,6 +18,8 @@ const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
 const PLAYER_BUFFER = 0;
+const PELLET_TIMEOUT = 15000;
+const POWER_TIMEOUT = 30000;
 
 function respawn_pellet(x, y) {
   io.emit("respawn pellet", x, y)
@@ -116,7 +118,7 @@ setInterval(function(){
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -1;
 
-        setTimeout(respawn_pellet, 5000, pos[0], pos[1]);
+        setTimeout(respawn_pellet, PELLET_TIMEOUT, pos[0], pos[1]);
 
         io.emit('collect', pos);
       }
@@ -130,7 +132,7 @@ setInterval(function(){
           maze[pos[0]][pos[1]] = -2;
 
           power = true;
-          setTimeout(respawn_power, 30000, pos[0], pos[1]);
+          setTimeout(respawn_power, POWER_TIMEOUT, pos[0], pos[1]);
 
           io.emit('collect power', pos);
         }
