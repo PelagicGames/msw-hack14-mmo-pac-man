@@ -22,6 +22,10 @@ setInterval(function(){
 
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
+      if (!connected[key].init_called) {
+        continue;
+      }
+
       states[key] = connected[key].state;
       let state = states[key];
       let oldX = state.x;
@@ -73,11 +77,25 @@ setInterval(function(){
 
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
+      if (!connected[key].init_called) {
+        continue;
+      }
+
       let state = states[key];
+
       if (state.type === "pacman") {
         for (var key2 in connected) {
           if (connected.hasOwnProperty(key2)) {
+            if (!connected[key2].init_called) {
+              continue;
+            }
+
+            if (key === key2) {
+              break;
+            }
+
             let state2 = connected[key2].state;
+
             if (state2.type === "ghost") {
               if (Math.abs(state.x - state2.x) < 32) {
                 if (Math.abs(state.y - state2.y) < 32) {
@@ -110,6 +128,7 @@ io.on('connection', function(socket){
   socket.right = 0;
   socket.up = 0;
   socket.down = 0;
+  socket.init_called = false;
 
   socket.state = {};
   socket.state.x = 200;
@@ -143,6 +162,7 @@ io.on('connection', function(socket){
     socket.state.x = state.x;
     socket.state.y = state.y;
     socket.state.type = state.type;
+    socket.init_called = true;
   });
 });
 
