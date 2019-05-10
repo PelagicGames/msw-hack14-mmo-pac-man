@@ -13,6 +13,7 @@ app.get('/', function(req, res){
 app.use(express.static(path.join(__dirname, 'public')));
 
 const SPEED = 4;
+const GHOST_SPEED = 6;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
@@ -46,26 +47,44 @@ setInterval(function(){
       let oldY = state.y;
 
       if (connected[key].left === 1) {
-        if (state.x === 0) {
+        if (state.x <= 0) {
           state.x = 928
         }
-        state.x -= SPEED;
+
+        if (state.type === "pacman") {
+          state.x -= SPEED;
+        } else {
+          state.x -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].right === 1) {
-        if (state.x === 928) {
+        if (state.x >= 928) {
           state.x = 0
         }
-        state.x += SPEED;
+
+        if (state.type === "pacman") {
+          state.x += SPEED;
+        } else {
+          state.x += GHOST_SPEED;
+        }
       }
 
       if (connected[key].up === 1) {
-        state.y -= SPEED;
+        if (state.type === "pacman") {
+          state.y -= SPEED;
+        } else {
+          state.y -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].down === 1) {
-        state.y += SPEED;
-      }
+         if (state.type === "pacman") {
+          state.y += SPEED;
+        } else {
+          state.y += GHOST_SPEED;
+        }
+     }
 
       if (state.x + PLAYER_WIDTH > WIDTH) {
         state.x = WIDTH - PLAYER_WIDTH;
