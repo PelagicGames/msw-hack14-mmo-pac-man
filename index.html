@@ -112,10 +112,12 @@
         });
 
         socket.on('init', function(state){
-          playertype = state.type;
           if (state.id !== id) {
             return;
           }
+
+          playertype = state.type;
+
           let img = document.createElement('img');
           img.src = state.type + ".png";
           img.id = id;
