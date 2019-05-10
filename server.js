@@ -142,7 +142,6 @@ setInterval(function(){
         }
 
         // TODO: add collision detection for pellets and power pills
-        // TODO: update scores
       }
     }
   }
@@ -157,29 +156,30 @@ setInterval(function(){
 
 // TODO: create a function to create the initial maze
 var maze = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
 var scores = {"ghosts": 0, "pacmans": 0};
+var counts = {"ghosts": 0, "pacmans": 0};
 
 io.on('connection', function(socket){
   console.log('User connected: ' + socket.id);
@@ -195,11 +195,17 @@ io.on('connection', function(socket){
   socket.state.angle = 0;
   socket.state.type = "pacman";
   socket.state.score = 0;
+  socket.state.id = socket.id;
 
   socket.on('disconnect', function(){
     console.log('User ' + socket.id + ' disconnected');
+    counts[socket.state.type + "s"] -= 1;
+
+    if (counts[socket.state.type + "s"] < 0) {
+      counts[socket.state.type + "s"] = 0;
+    }
+
     io.emit('remove', socket.id);
-    // TODO: send down a message to client to remove the img with id socket.id
   });
 
   socket.on('left', function(value){
@@ -218,10 +224,66 @@ io.on('connection', function(socket){
     socket.down = value;
   });
 
-  socket.on('init', function(state){
-    socket.state.x = state.x;
-    socket.state.y = state.y;
-    socket.state.type = state.type;
+  socket.on('pre_init', function(){
+    // TODO: Randomise start position, or maybe try to start in a safe location
+    let placed = false;
+    let xSpawn = 0;
+    let ySpawn = 0;
+
+    while (!placed) {
+      xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+      ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+
+      if (!isWall(xSpawn, ySpawn)) {
+        placed = true;
+      }
+    }
+
+    socket.state.x = xSpawn;
+    socket.state.y = ySpawn;
+
+    if (counts.pacmans === 0) {
+      socket.state.type = "pacman";
+    } else if (counts.ghosts === 0) {
+      socket.state.type = "ghost";
+    } else {
+      if (scores.ghosts > counts.ghosts * 1000) {
+        if (scores.pacmans > counts.pacmans * 1000) {
+          if (scores.ghosts / counts.ghosts > scores.pacmans / counts.pacmans) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        } else {
+          if (scores.ghosts / counts.ghosts > 1000) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        }
+      } else {
+        if (scores.pacmans > counts.pacmans * 1000) {
+          if (1000 > scores.pacmans / counts.pacmans) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        } else {
+          if (Math.random() > 0.5) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        }
+      }
+    }
+
+    counts[socket.state.type + "s"] += 1;
+
+    io.emit('init', socket.state);
+  });
+
+  socket.on('init', function(){
     socket.init_called = true;
   });
 
