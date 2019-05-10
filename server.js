@@ -74,10 +74,20 @@ setInterval(function(){
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
       let state = states[key];
-
-      for (var key2 in connected) {
-        if (connected.hasOwnProperty(key2)) {
-          let state2 = connected[key2].state;
+      if (state.type === "pacman") {
+        for (var key2 in connected) {
+          if (connected.hasOwnProperty(key2)) {
+            let state2 = connected[key2].state;
+            if (state2.type === "ghost") {
+              if (Math.abs(state.x - state2.x) < 32) {
+                if (Math.abs(state.y -state2.x) < 32) {
+                  console.log("crashed")
+                  state.x = Math.floor(Math.random() * WIDTH);
+                  state.y = Math.floor(Math.random() * HEIGHT);
+                }
+              }
+            }
+          }
           // TODO: add collision detection checking state.type
           // TODO: add collision detection for pellets and power pills
           // TODO: update scores
@@ -128,13 +138,6 @@ io.on('connection', function(socket){
 
   socket.on('down', function(value){
     socket.down = value;
-  });
-
-  socket.on('crashed', function(value){
-    if (socket.id === value) {
-      socket.state.x = Math.floor(Math.random() * WIDTH);
-      socket.state.y = Math.floor(Math.random() * HEIGHT);
-    }
   });
 
   socket.on('init', function(state){

@@ -97,18 +97,6 @@
 
               if (state.type === "pacman") {
                 $('#' + key)[0].style.transform = "rotate(" + state.angle + "deg)";
-                for (var other_key in states) {
-                  if (states.hasOwnProperty(other_key)) {
-                    let other_state = states[other_key];
-                    if (other_state.type === "ghost") {
-                      if (Math.abs(parseInt($('#' + key)[0].style.left) - parseInt($('#' + other_key)[0].style.left))< 32) {
-                        if (Math.abs(parseInt($('#' + key)[0].style.top) - parseInt($('#' + other_key)[0].style.top))< 32) {
-                          socket.emit("crashed", $('#' + key)[0].id)
-                        }
-                      }
-                    }
-                  }
-                }
               } else if (state.type === "ghost") {
                 if (state.angle >= 180) {
                   $('#' + key)[0].style.transform = "rotateY(180deg)";
