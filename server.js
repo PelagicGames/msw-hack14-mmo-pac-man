@@ -74,6 +74,21 @@ setInterval(function(){
         state.y = 0;
       }
 
+      var playerCentreX = state.x + 16;
+      var playerCentreY = state.y + 16;
+      var playerLeftEdge = state.x;
+      var playerRightEdge = state.x + 32;
+      var playerTopEdge = state.y;
+      var playerBottomEdge = state.y +32;
+
+      // // Check for walls to the left
+      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY)))      {
+        console.log("WALL!");
+      }
+      // Check for a wall to the right
+      // Check for a wall above
+      // Check for a wall below
+
       if (state.x > oldX) {
         state.angle = 0;
       } else if (state.x < oldX) {
@@ -290,8 +305,7 @@ http.listen(port, function(){
   console.log('listening on *:' + port);
 });
 
-function isWall(xPos, yPos) {
-  
+function isWall(xPos, yPos) {  
   if (maze[yPos, xPos] === 1){
     return true;
   } else{
@@ -299,4 +313,7 @@ function isWall(xPos, yPos) {
   }
 }
 
-
+function pixelToGrid(pixel){
+  var grid = Math.round(pixel / PLAYER_WIDTH);
+  return grid;
+}
