@@ -15,6 +15,7 @@ const SPEED = 4;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
+const PLAYER_BUFFER = 4;
 
 setInterval(function(){
   let states = {};
@@ -63,39 +64,38 @@ setInterval(function(){
         state.y = 0;
       }
 
-      if ((state.type === "pacman") && (isPellet(state.x + (PLAYER_WIDTH / 2), state.y + (PLAYER_WIDTH / 2)))) {
+      var playerCentreX = state.x + (PLAYER_WIDTH / 2);
+      var playerCentreY = state.y + (PLAYER_WIDTH / 2);
+      var playerLeftEdge = state.x + PLAYER_BUFFER;
+      var playerRightEdge = state.x + PLAYER_WIDTH - PLAYER_BUFFER;
+      var playerTopEdge = state.y + PLAYER_BUFFER;
+      var playerBottomEdge = state.y + PLAYER_WIDTH - PLAYER_BUFFER;
+
+      if ((state.type === "pacman") && (isPellet(playerCentreX, playerCentreY))) {
         state.score += 10;
         scores.pacmans += 10;
 
-        let pos = [Math.floor((state.y + (PLAYER_WIDTH / 2)) / PLAYER_WIDTH), Math.floor((state.x + (PLAYER_WIDTH / 2)) / PLAYER_WIDTH)];
+        let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -1;
 
         io.emit('collect', pos);
       }
 
-      var playerCentreX = state.x + 16;
-      var playerCentreY = state.y + 16;
-      var playerLeftEdge = state.x;
-      var playerRightEdge = state.x + 32;
-      var playerTopEdge = state.y;
-      var playerBottomEdge = state.y +32;
-
       // // Check for walls to the left
-      console.log(pixelToGrid(playerLeftEdge) + ',' + pixelToGrid(playerCentreY));
-      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if (isWall(playerLeftEdge, playerCentreY)) {
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall to the right
-      if (isWall(pixelToGrid(playerRightEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if (isWall(playerRightEdge, playerCentreY)) {
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall above
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerTopEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerTopEdge)) {
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall below
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerBottomEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerBottomEdge)) {
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
 
       if (state.x > oldX) {
@@ -174,7 +174,6 @@ setInterval(function(){
 // TODO: create a repeating function to add pellets and power pills
 // (probably as a Boolean matrix indicating whether a pellet is present at a given (row, column))
 
-// TODO: create a function to create the initial maze
 var maze = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -247,7 +246,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('pre_init', function(){
-    // TODO: Randomise start position, or maybe try to start in a safe location
     let placed = false;
     let xSpawn = 0;
     let ySpawn = 0;
