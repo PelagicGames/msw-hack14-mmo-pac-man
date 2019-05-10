@@ -17,6 +17,11 @@ const HEIGHT = 702;
 const WIDTH = 960;
 const PLAYER_BUFFER = 4;
 
+function respawn_pellet(x, y) {
+  io.emit("respawn pellet", x, y)
+  maze[x][y] = 0
+}
+
 setInterval(function(){
   let states = {};
   let connected = io.sockets.clients().connected;
@@ -83,6 +88,8 @@ setInterval(function(){
 
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -1;
+
+        setTimeout(respawn_pellet, 5000, pos[0], pos[1]);
 
         io.emit('collect', pos);
       }

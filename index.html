@@ -234,6 +234,12 @@
             $('[id="pellet-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
           }
         });
+        socket.on('respawn pellet', function(x, y) {
+          console.log("respawning pellet")
+          if ($('[id="pellet-' + x + ',' + y + '"]')[0]) {
+            $('[id="pellet-' + x + ',' + y + '"]')[0].style.visibility = "";
+          }
+        });
       });
     </script>
     <canvas id="myCanvas" width="960" height="702" style="position: absolute; left: 0px; background-color: black;">
