@@ -53,7 +53,7 @@ setInterval(function(){
           state.x = 928
         }
 
-        if (state.type === "pacman") {
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
           state.x -= SPEED;
         } else {
           state.x -= GHOST_SPEED;
@@ -65,7 +65,7 @@ setInterval(function(){
           state.x = 0
         }
 
-        if (state.type === "pacman") {
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
           state.x += SPEED;
         } else {
           state.x += GHOST_SPEED;
@@ -81,7 +81,7 @@ setInterval(function(){
       }
 
       if (connected[key].down === 1) {
-         if (state.type === "pacman") {
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
           state.y += SPEED;
         } else {
           state.y += GHOST_SPEED;
