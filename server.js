@@ -15,7 +15,7 @@ const SPEED = 4;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
-const PLAYER_BUFFER = 4;
+const PLAYER_BUFFER = 0;
 
 function respawn_pellet(x, y) {
   io.emit("respawn pellet", x, y)
