@@ -11,7 +11,7 @@ app.get('/', function(req, res){
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-const SPEED = 5;
+const SPEED = 4;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 640;
 const WIDTH = 960;
