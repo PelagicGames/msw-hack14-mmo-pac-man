@@ -98,13 +98,26 @@ setInterval(function(){
           if (state.type != state2.type) {
             if (Math.abs(state.x - state2.x) < 32) {
               if (Math.abs(state.y - state2.y) < 32) {
+                let placed = false;
+                let xSpawn = 0;
+                let ySpawn = 0;
+
+                while (!placed) {
+                  xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+                  ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+
+                  if (!isWall(xSpawn, ySpawn)) {
+                    placed = true;
+                  }
+                }
+
                 if (state.type === "pacman") {
-                  state.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
-                  state.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+                  state.x = xSpawn;
+                  state.y = ySpawn;
                 } else {
                   state2.score += 100;
-                  state2.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
-                  state2.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+                  state2.x = xSpawn;
+                  state2.y = ySpawn;
                 }
 
                 scores.ghosts += 100;
@@ -203,3 +216,12 @@ io.on('connection', function(socket){
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+function isWall(xPos, yPos) {
+  
+  if (maze[yPos, xPos] === 1){
+    return true;
+  } else{
+    return false;
+  }
+}
