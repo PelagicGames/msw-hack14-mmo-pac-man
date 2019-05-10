@@ -111,6 +111,10 @@
         });
 
         socket.on('init', function(state){
+          if (state.id !== id) {
+            return;
+          }
+
           let img = document.createElement('img');
           img.src = state.type + ".png";
           img.id = id;
