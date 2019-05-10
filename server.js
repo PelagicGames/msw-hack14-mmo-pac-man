@@ -127,7 +127,6 @@ setInterval(function(){
         }
 
         // TODO: add collision detection for pellets and power pills
-        // TODO: update scores
       }
     }
   }
@@ -165,6 +164,7 @@ var maze = [
 ];
 
 var scores = {"ghosts": 0, "pacmans": 0};
+var counts = {"ghosts": 0, "pacmans": 0};
 
 io.on('connection', function(socket){
   console.log('User connected: ' + socket.id);
@@ -180,11 +180,17 @@ io.on('connection', function(socket){
   socket.state.angle = 0;
   socket.state.type = "pacman";
   socket.state.score = 0;
+  socket.state.id = socket.id;
 
   socket.on('disconnect', function(){
     console.log('User ' + socket.id + ' disconnected');
+    counts[socket.state.type + "s"] -= 1;
+
+    if (counts[socket.state.type + "s"] < 0) {
+      counts[socket.state.type + "s"] = 0;
+    }
+
     io.emit('remove', socket.id);
-    // TODO: send down a message to client to remove the img with id socket.id
   });
 
   socket.on('left', function(value){
@@ -203,10 +209,53 @@ io.on('connection', function(socket){
     socket.down = value;
   });
 
-  socket.on('init', function(state){
-    socket.state.x = state.x;
-    socket.state.y = state.y;
-    socket.state.type = state.type;
+  socket.on('pre_init', function(){
+    // TODO: Randomise start position, or maybe try to start in a safe location
+    socket.state.x = 200;
+    socket.state.y = 200;
+
+    if (counts.pacmans === 0) {
+      socket.state.type = "pacman";
+    } else if (counts.ghosts === 0) {
+      socket.state.type = "ghost";
+    } else {
+      if (scores.ghosts > counts.ghosts * 1000) {
+        if (scores.pacmans > counts.pacmans * 1000) {
+          if (scores.ghosts / counts.ghosts > scores.pacmans / counts.pacmans) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        } else {
+          if (scores.ghosts / counts.ghosts > counts.pacmans * 1000) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        }
+      } else {
+        if (scores.pacmans > counts.pacmans * 1000) {
+          if (counts.ghosts * 1000 > scores.pacmans / counts.pacmans) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        } else {
+          if (counts.ghosts * 1000 > counts.pacmans * 1000) {
+            socket.state.type = "pacman";
+          } else {
+            socket.state.type = "ghost";
+          }
+        }
+      }
+    }
+
+    counts[socket.state.type + "s"] += 1;
+
+    io.emit('init', socket.state);
+  });
+
+  socket.on('init', function(){
     socket.init_called = true;
   });
 
