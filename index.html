@@ -176,18 +176,23 @@
                 $('#' + key)[0].style.transform = "rotate(" + state.angle + "deg)";
               } else if (state.type === "ghost") {
                 if (state.angle >= 180) {
-                  $('#' + key)[0].style.transform = "rotateY(180deg)";
+                  $('#' + key)[0].style.transform = "scaleX(-1)";
                 } else {
-                  $('#' + key)[0].style.transform = "rotateY(0deg)";
+                  $('#' + key)[0].style.transform = "scaleX(1)";
                 }
               }
             }
           }
         });
-        socket.on('score', function(who) {
-          if (who == "ghosts") {
-            console.log("Ghosts scored updating table")
-            $('#ghost')[0].innerText = parseInt($('#ghost')[0].innerText) + 100
+        socket.on('score', function(scores) {
+          for (var key in scores) {
+            if (scores.hasOwnProperty(key)) {
+              let score = scores[key];
+
+              if ($('#' + key)[0]) {
+                $('#' + key)[0].innerText = score;
+              }
+            }
           }
         });
       });
@@ -202,7 +207,7 @@
       </tr>
       <tr>
         <td id="pacmans">0</td>
-        <td id="ghost">0</td>
+        <td id="ghosts">0</td>
       </tr>
     </table>
     <audio id="music" loop>
