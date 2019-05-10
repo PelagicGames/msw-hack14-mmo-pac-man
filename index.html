@@ -274,6 +274,25 @@
             $('[id="power-' + x + ',' + y + '"]')[0].style.visibility = "";
           }
         });
+
+        socket.on('ghost respawn', function(id) {
+          let ghosts = $('[src="ghost_vulnerable.png"]');
+          let other_ghosts = $('[src="other_ghost_vulnerable.png"]');
+
+          for (var index = 0; index < ghosts.length; index++) {
+            if (ghosts[index].id == id) {
+              ghosts[index].src = "ghost.png";
+              return;
+            }
+          }
+
+          for (var index = 0; index < other_ghosts.length; index++) {
+            if (other_ghosts[index].id == id) {
+              other_ghosts[index].src = "other_ghost.png";
+              return;
+            }
+          }
+        });
       });
     </script>
     <canvas id="myCanvas" width="960" height="702" style="position: absolute; left: 0px; background-color: black;">
