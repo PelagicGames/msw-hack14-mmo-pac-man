@@ -80,7 +80,6 @@
           $(document).on('click', function(e) {
             var xOffset = (e.pageX - 480) / 960;
             var yOffset = (e.pageY - 352) / 704;
-            console.log(xOffset, yOffset)
 
             if ((Math.abs(xOffset) > Math.abs(yOffset)) && (xOffset > 0)) {
               socket.emit('left', 0);
@@ -229,9 +228,25 @@
         });
 
         socket.on('collect', function(pos) {
-          console.log("COLLECTED", pos);
           if ($('[id="pellet-' + pos[0] + ',' + pos[1] + '"]')[0]) {
             $('[id="pellet-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
+          }
+        });
+
+        socket.on('power', function(pos) {
+          if ($('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0]) {
+            $('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
+          }
+
+          let ghosts = $('[src="ghost.png"]');
+          let other_ghosts = $('[src="other_ghost.png"]');
+
+          for (var index = 0; index < ghosts.length; index++) {
+            ghosts[index].src = "ghost_vulnerable.png";
+          }
+
+          for (var index = 0; index < other_ghosts.length; index++) {
+            other_ghosts[index].src = "other_ghost_vulnerable.png";
           }
         });
       });

@@ -91,14 +91,17 @@ setInterval(function(){
       if (isWall(playerLeftEdge, playerCentreY)) {
         state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
+
       // Check for a wall to the right
       if (isWall(playerRightEdge, playerCentreY)) {
         state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
+
       // Check for a wall above
       if (isWall(playerCentreX, playerTopEdge)) {
         state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
+
       // Check for a wall below
       if (isWall(playerCentreX, playerBottomEdge)) {
         state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
