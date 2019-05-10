@@ -11,7 +11,7 @@ app.get('/', function(req, res){
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-const SPEED = 5;
+const SPEED = 4;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 640;
 const WIDTH = 960;
@@ -83,32 +83,35 @@ setInterval(function(){
 
       let state = states[key];
 
-      if (state.type === "pacman") {
-        for (var key2 in connected) {
-          if (connected.hasOwnProperty(key2)) {
-            if (!connected[key2].init_called) {
-              continue;
-            }
+      for (var key2 in connected) {
+        if (connected.hasOwnProperty(key2)) {
+          if (!connected[key2].init_called) {
+            continue;
+          }
 
-            if (key === key2) {
-              break;
-            }
+          if (key === key2) {
+            break;
+          }
 
-            let state2 = connected[key2].state;
+          let state2 = connected[key2].state;
 
-            if (state2.type === "ghost") {
-              if (Math.abs(state.x - state2.x) < 32) {
-                if (Math.abs(state.y - state2.y) < 32) {
-                  console.log("crashed")
-                  state.x = Math.floor(Math.random() * WIDTH);
-                  state.y = Math.floor(Math.random() * HEIGHT);
+          if (state.type != state2.type) {
+            if (Math.abs(state.x - state2.x) < 32) {
+              if (Math.abs(state.y - state2.y) < 32) {
+                if (state.type === "pacman") {
+                  state.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+                  state.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+                } else {
+                  state2.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+                  state2.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
                 }
               }
             }
           }
-          // TODO: add collision detection for pellets and power pills
-          // TODO: update scores
         }
+
+        // TODO: add collision detection for pellets and power pills
+        // TODO: update scores
       }
     }
   }
