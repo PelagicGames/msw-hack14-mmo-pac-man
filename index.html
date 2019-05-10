@@ -72,6 +72,11 @@
           socket.emit('init', {"x": parseInt(img.style.left), "y": parseInt(img.style.top), "type": playerType});
         });
 
+        socket.on('remove', function(id){
+          let element = $('#' + id)[0];
+          element.parentElement.removeChild(element);
+        });
+
         socket.on('state', function(states){
           for (var key in states) {
             // TODO: check for special key for pellets and power pills, and make them visible/invisible using
