@@ -178,6 +178,18 @@
                   img.style.top = 32*j + 6 + "px";
                   $('body')[0].appendChild(img);
                 }
+                else if (newMaze[j][i] === -2) {
+                  let img = document.createElement('img');
+                  img.src = "power.png";
+                  img.id = "power-" + j + "," + i;
+                  img.width = 20;
+                  img.height = 20;
+                  img.style.position = "absolute";
+                  img.style.left = 32*i + 6 + "px";
+                  img.style.top = 32*j + 6 + "px";
+                  img.style.visibility = "hidden";
+                  $('body')[0].appendChild(img);
+                }
               }
             }
             maze = true;
