@@ -272,6 +272,17 @@
         socket.on('respawn power', function(x, y) {
           if ($('[id="power-' + x + ',' + y + '"]')[0]) {
             $('[id="power-' + x + ',' + y + '"]')[0].style.visibility = "";
+
+          let ghosts = $('[src="ghost_vulnerable.png"]');
+          let other_ghosts = $('[src="other_ghost_vulnerable.png"]');
+
+          for (var index = 0; index < ghosts.length; index++) {
+            ghosts[index].src = "ghost.png";
+          }
+
+          for (var index = 0; index < other_ghosts.length; index++) {
+            other_ghosts[index].src = "other_ghost.png";
+          }
           }
         });
       });
