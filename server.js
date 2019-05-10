@@ -80,7 +80,7 @@ setInterval(function(){
             let state2 = connected[key2].state;
             if (state2.type === "ghost") {
               if (Math.abs(state.x - state2.x) < 32) {
-                if (Math.abs(state.y -state2.y) < 32) {
+                if (Math.abs(state.y - state2.y) < 32) {
                   console.log("crashed")
                   state.x = Math.floor(Math.random() * WIDTH);
                   state.y = Math.floor(Math.random() * HEIGHT);
@@ -88,7 +88,6 @@ setInterval(function(){
               }
             }
           }
-          // TODO: add collision detection checking state.type
           // TODO: add collision detection for pellets and power pills
           // TODO: update scores
         }
