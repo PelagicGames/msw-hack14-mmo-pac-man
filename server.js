@@ -102,17 +102,19 @@ setInterval(function(){
         io.emit('collect', pos);
       }
 
-      if ((state.type === "pacman") && (isPowerPill(playerCentreX, playerCentreY))) {
-        state.score += 100;
-        scores.pacmans += 100;
+      if (power === false) {
+        if ((state.type === "pacman") && (isPowerPill(playerCentreX, playerCentreY))) {
+          state.score += 100;
+          scores.pacmans += 100;
 
-        let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
-        maze[pos[0]][pos[1]] = -2;
+          let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
+          maze[pos[0]][pos[1]] = -2;
 
-        power = true;
-        setTimeout(respawn_power, 30000, pos[0], pos[1]);
+          power = true;
+          setTimeout(respawn_power, 30000, pos[0], pos[1]);
 
-        io.emit('collect power', pos);
+          io.emit('collect power', pos);
+        }
       }
 
       // Check for walls to the left
