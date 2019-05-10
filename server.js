@@ -211,8 +211,21 @@ io.on('connection', function(socket){
 
   socket.on('pre_init', function(){
     // TODO: Randomise start position, or maybe try to start in a safe location
-    socket.state.x = 200;
-    socket.state.y = 200;
+    let placed = false;
+    let xSpawn = 0;
+    let ySpawn = 0;
+
+    while (!placed) {
+      xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+      ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+
+      if (!isWall(xSpawn, ySpawn)) {
+        placed = true;
+      }
+    }
+
+    socket.state.x = xSpawn;
+    socket.state.y = ySpawn;
 
     if (counts.pacmans === 0) {
       socket.state.type = "pacman";
@@ -227,7 +240,7 @@ io.on('connection', function(socket){
             socket.state.type = "ghost";
           }
         } else {
-          if (scores.ghosts / counts.ghosts > counts.pacmans * 1000) {
+          if (scores.ghosts / counts.ghosts > 1000) {
             socket.state.type = "pacman";
           } else {
             socket.state.type = "ghost";
@@ -235,13 +248,13 @@ io.on('connection', function(socket){
         }
       } else {
         if (scores.pacmans > counts.pacmans * 1000) {
-          if (counts.ghosts * 1000 > scores.pacmans / counts.pacmans) {
+          if (1000 > scores.pacmans / counts.pacmans) {
             socket.state.type = "pacman";
           } else {
             socket.state.type = "ghost";
           }
         } else {
-          if (counts.ghosts * 1000 > counts.pacmans * 1000) {
+          if (Math.random() > 0.5) {
             socket.state.type = "pacman";
           } else {
             socket.state.type = "ghost";
