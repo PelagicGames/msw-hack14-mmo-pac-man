@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 
+var power = false
 var port = process.env.PORT || 8080;
 
 app.get('/', function(req, res){
@@ -25,6 +26,7 @@ function respawn_pellet(x, y) {
 function respawn_power(x, y) {
   io.emit("respawn power", x, y)
   maze[x][y] = 0
+  power = false
 }
 
 setInterval(function(){
@@ -41,6 +43,8 @@ setInterval(function(){
       let state = states[key];
       let oldX = state.x;
       let oldY = state.y;
+
+      console.log("power is" + power)
 
       if (connected[key].left === 1) {
         if (state.x === 0) {
@@ -105,6 +109,8 @@ setInterval(function(){
 
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -1;
+
+        power = true
 
         setTimeout(respawn_power, 30000, pos[0], pos[1]);
 
@@ -175,17 +181,16 @@ setInterval(function(){
                     placed = true;
                   }
                 }
-
-                if (state.type === "pacman") {
-                  state.x = xSpawn;
-                  state.y = ySpawn;
-                } else {
-                  state2.score += 100;
-                  state2.x = xSpawn;
-                  state2.y = ySpawn;
-                }
-
-                scores.ghosts += 100;
+                if (power === false)
+                  if (state.type === "pacman") {
+                    state.x = xSpawn;
+                    state.y = ySpawn;
+                  } else {
+                      state2.score += 100;
+                      state2.x = xSpawn;
+                      state2.y = ySpawn;
+                  }
+                  scores.ghosts += 100;
               }
             }
           }
