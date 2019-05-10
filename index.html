@@ -51,6 +51,7 @@
         var socket = io();
         var id = '';
         var maze = false;
+        var playertype = "pacman";
 
         $(document).ready(function() {
           $(document).keydown(function(e) {
@@ -111,10 +112,10 @@
         });
 
         socket.on('init', function(state){
+          playertype = state.type;
           if (state.id !== id) {
             return;
           }
-
           let img = document.createElement('img');
           img.src = state.type + ".png";
           img.id = id;
@@ -265,7 +266,11 @@
           }
 
           for (var index = 0; index < other_ghosts.length; index++) {
-            other_ghosts[index].src = "other_ghost_vulnerable.png";
+            if (playertype === "pacman") {
+              other_ghosts[index].src = "ghost_vulnerable.png";
+            } else {
+              other_ghosts[index].src = "other_ghost_vulnerable.png";
+            }
           }
         });
 
