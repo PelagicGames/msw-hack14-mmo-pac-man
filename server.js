@@ -263,14 +263,14 @@ setInterval(function(){
                   if (state.type === "pacman") {
                     state.x = xSpawn;
                     state.y = ySpawn;
-                    state2.score += 100;
+                    state2.score += 250;
                   } else {
                     state2.x = xSpawn;
                     state2.y = ySpawn;
-                    state.score += 100;
+                    state.score += 250;
                   }
 
-                  scores.ghosts += 100;
+                  scores.ghosts += 250;
                 }
               }
             }
