@@ -63,6 +63,16 @@ setInterval(function(){
         state.y = 0;
       }
 
+      if ((state.type === "pacman") && (isPellet(state.x + (PLAYER_WIDTH / 2), state.y + (PLAYER_WIDTH / 2)))) {
+        state.score += 10;
+        scores.pacmans += 10;
+
+        let pos = [Math.floor((state.y + (PLAYER_WIDTH / 2)) / PLAYER_WIDTH), Math.floor((state.x + (PLAYER_WIDTH / 2)) / PLAYER_WIDTH)];
+        maze[pos[0]][pos[1]] = -1;
+
+        io.emit('collect', pos);
+      }
+
       var playerCentreX = state.x + 16;
       var playerCentreY = state.y + 16;
       var playerLeftEdge = state.x;
@@ -308,6 +318,14 @@ http.listen(port, function(){
 
 function isWall(xPos, yPos) {
   return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 1);
+}
+
+function isPellet(xPos, yPos) {
+  return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 0);
+}
+
+function isPowerPill(xPos, yPos) {
+  return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 2);
 }
 
 function pixelToGrid(pixel){
