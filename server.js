@@ -32,6 +32,7 @@ setInterval(function(){
       let oldY = state.y;
 
       if (connected[key].left === 1) {
+
         state.x -= SPEED;
       }
 
@@ -169,18 +170,22 @@ io.on('connection', function(socket){
   });
 
   socket.on('left', function(value){
+    value = stopMoving(socket.state, value)
     socket.left = value;
   });
 
   socket.on('right', function(value){
+    value = stopMoving(socket.state, value)
     socket.right = value;
   });
 
   socket.on('up', function(value){
+    value = stopMoving(socket.state, value)
     socket.up = value;
   });
 
   socket.on('down', function(value){
+    value = stopMoving(socket.state, value)
     socket.down = value;
   });
 
@@ -197,3 +202,15 @@ io.on('connection', function(socket){
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+
+function stopMoving(state, value) {
+  row = floor(state.y / 32)
+  column = floor(state.x / 32)
+  if (maze[row][column] === 1) {
+    return 0
+  }
+  else {
+    return value
+  }
+}
