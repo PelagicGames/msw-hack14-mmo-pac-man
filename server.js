@@ -25,7 +25,7 @@ function respawn_pellet(x, y) {
 
 function respawn_power(x, y) {
   io.emit("respawn power", x, y)
-  maze[x][y] = 0
+  maze[x][y] = 2
   power = false
 }
 
@@ -108,7 +108,7 @@ setInterval(function(){
         scores.pacmans += 100;
 
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
-        maze[pos[0]][pos[1]] = -1;
+        maze[pos[0]][pos[1]] = -2;
 
         power = true
 
