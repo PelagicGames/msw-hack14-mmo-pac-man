@@ -7,6 +7,28 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
       canvas { background: #eee; display: block; margin: 0 auto; }
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        position: absolute;
+        left: 965px;
+        top: 45px;
+        width: 300px;
+        height: 100px;
+      }
+      h2 {
+        position: absolute;
+        left: 965px;
+        top: 0px;
+      }
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
       .btn {
         background-color: black;
         border: none;
@@ -21,6 +43,7 @@
     </style>
   </head>
   <body>
+    <font size="5" face="Courier New" >
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
@@ -190,7 +213,13 @@
             }
           }
         });
-
+        socket.on('score', function(who) {
+          if (who == "ghosts") {
+            console.log("Ghosts scored updating table")
+            $('#ghost')[0].innerText = parseInt($('#ghost')[0].innerText) + 100
+          }
+        });
+        // TODO: add socket.on function to delete img by id
         // TODO: add socket.on function to get the maze
         // TODO: draw the maze, probably by drawing each square that makes it up,
         // choosing an img src based on the position of walls. Players can be drawn
@@ -202,6 +231,17 @@
     <!-- TODO: display scores -->
     <canvas id="myCanvas" width="960" height="640" style="position: absolute; left: 0px; background-color: black;">
     </canvas>
+    <h2>Scores</h2>
+    <table>
+      <tr>
+        <th>Pac-Mans</th>
+        <th>Ghosts</th>
+      </tr>
+      <tr>
+        <td id="pacmans">0</td>
+        <td id="ghost">0</td>
+      </tr>
+    </table>
     <audio id="music" loop>
       <source src="PacMan_lvl1.mp3" type="audio/mpeg">
     </audio>
@@ -219,6 +259,6 @@
         }
       }
     </script>
-    <button onclick="toggleMusic()" class="btn" style="position: absolute; left: 980px; top: 20px;"><i class="fa fa-music"></i></button>
+    <button onclick="toggleMusic()" class="btn" style="position: absolute; left: 980px; top: 500px;"><i class="fa fa-music"></i></button>
   </body>
 </html>
