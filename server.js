@@ -22,6 +22,11 @@ function respawn_pellet(x, y) {
   maze[x][y] = 0
 }
 
+function respawn_power(x, y) {
+  io.emit("respawn power", x, y)
+  maze[x][y] = 0
+}
+
 setInterval(function(){
   let states = {};
   let connected = io.sockets.clients().connected;
@@ -92,6 +97,18 @@ setInterval(function(){
         setTimeout(respawn_pellet, 5000, pos[0], pos[1]);
 
         io.emit('collect', pos);
+      }
+
+      if ((state.type === "pacman") && (isPowerPill(playerCentreX, playerCentreY))) {
+        state.score += 100;
+        scores.pacmans += 100;
+
+        let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
+        maze[pos[0]][pos[1]] = -1;
+
+        setTimeout(respawn_power, 30000, pos[0], pos[1]);
+
+        io.emit('collect power', pos);
       }
 
       // // Check for walls to the left
