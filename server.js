@@ -71,12 +71,22 @@ setInterval(function(){
       var playerBottomEdge = state.y +32;
 
       // // Check for walls to the left
-      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY)))      {
+      console.log(pixelToGrid(playerLeftEdge) + ',' + pixelToGrid(playerCentreY));
+      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY))){
         console.log("WALL!");
       }
       // Check for a wall to the right
+      if (isWall(pixelToGrid(playerRightEdge), pixelToGrid(playerCentreY))){
+        console.log("WALL!");
+      }
       // Check for a wall above
+      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerTopEdge))){
+        console.log("WALL!");
+      }
       // Check for a wall below
+      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerBottomEdge))){
+        console.log("WALL!");
+      }
 
       if (state.x > oldX) {
         state.angle = 0;
