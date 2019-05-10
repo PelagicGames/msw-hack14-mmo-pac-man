@@ -99,12 +99,20 @@ setInterval(function(){
             if (Math.abs(state.x - state2.x) < 32) {
               if (Math.abs(state.y - state2.y) < 32) {
                 io.emit('score', "ghosts");
-                if (state.type === "pacman") {
-                  state.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
-                  state.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
-                } else {
-                  state2.x = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
-                  state2.y = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+                var placed = false;
+                while (!placed){
+                  xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH);
+                  ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH);
+                  if (!isWall(xSpawn, ySpawn)){
+                    if (state.type === "pacman") {
+                      state.x = xSpawn * PLAYER_WIDTH;
+                      state.y = ySpawn * PLAYER_WIDTH;
+                    } else {
+                      state2.x = xSpawn * PLAYER_WIDTH;
+                      state2.y = ySpawn * PLAYER_WIDTH;
+                    }
+                  placed = true;
+                  }
                 }
               }
             }
@@ -197,3 +205,12 @@ io.on('connection', function(socket){
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+function isWall(xPos, yPos) {
+  
+  if (maze[yPos, xPos] === 1){
+    return true;
+  } else{
+    return false;
+  }
+}
