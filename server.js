@@ -229,11 +229,13 @@ setInterval(function(){
                     state.x = xSpawn;
                     state.y = ySpawn;
                     state.vulnerable = false;
+                    io.emit("ghost respawn", state.id);
                     state2.score += 100;
                   } else {
                     state2.x = xSpawn;
                     state2.y = ySpawn;
                     state2.vulnerable = false;
+                    io.emit("ghost respawn", state2.id);
                     state.score += 100;
                   }
 
