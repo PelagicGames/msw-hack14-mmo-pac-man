@@ -164,7 +164,6 @@ setInterval(function(){
 // TODO: create a repeating function to add pellets and power pills
 // (probably as a Boolean matrix indicating whether a pellet is present at a given (row, column))
 
-// TODO: create a function to create the initial maze
 var maze = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -237,7 +236,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('pre_init', function(){
-    // TODO: Randomise start position, or maybe try to start in a safe location
     let placed = false;
     let xSpawn = 0;
     let ySpawn = 0;
