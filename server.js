@@ -13,10 +13,13 @@ app.get('/', function(req, res){
 app.use(express.static(path.join(__dirname, 'public')));
 
 const SPEED = 4;
+const GHOST_SPEED = 6;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
 const PLAYER_BUFFER = 0;
+const PELLET_TIMEOUT = 15000;
+const POWER_TIMEOUT = 30000;
 
 function respawn_pellet(x, y) {
   io.emit("respawn pellet", x, y)
@@ -46,26 +49,44 @@ setInterval(function(){
       let oldY = state.y;
 
       if (connected[key].left === 1) {
-        if (state.x === 0) {
+        if (state.x <= 0) {
           state.x = 928
         }
-        state.x -= SPEED;
+
+        if (state.type === "pacman") {
+          state.x -= SPEED;
+        } else {
+          state.x -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].right === 1) {
-        if (state.x === 928) {
+        if (state.x >= 928) {
           state.x = 0
         }
-        state.x += SPEED;
+
+        if (state.type === "pacman") {
+          state.x += SPEED;
+        } else {
+          state.x += GHOST_SPEED;
+        }
       }
 
       if (connected[key].up === 1) {
-        state.y -= SPEED;
+        if (state.type === "pacman") {
+          state.y -= SPEED;
+        } else {
+          state.y -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].down === 1) {
-        state.y += SPEED;
-      }
+         if (state.type === "pacman") {
+          state.y += SPEED;
+        } else {
+          state.y += GHOST_SPEED;
+        }
+     }
 
       if (state.x + PLAYER_WIDTH > WIDTH) {
         state.x = WIDTH - PLAYER_WIDTH;
@@ -97,7 +118,7 @@ setInterval(function(){
         let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
         maze[pos[0]][pos[1]] = -1;
 
-        setTimeout(respawn_pellet, 5000, pos[0], pos[1]);
+        setTimeout(respawn_pellet, PELLET_TIMEOUT, pos[0], pos[1]);
 
         io.emit('collect', pos);
       }
@@ -111,7 +132,7 @@ setInterval(function(){
           maze[pos[0]][pos[1]] = -2;
 
           power = true;
-          setTimeout(respawn_power, 30000, pos[0], pos[1]);
+          setTimeout(respawn_power, POWER_TIMEOUT, pos[0], pos[1]);
 
           io.emit('collect power', pos);
         }
@@ -227,11 +248,13 @@ setInterval(function(){
                     state.x = xSpawn;
                     state.y = ySpawn;
                     state.vulnerable = false;
+                    io.emit("ghost respawn", state.id);
                     state2.score += 100;
                   } else {
                     state2.x = xSpawn;
                     state2.y = ySpawn;
                     state2.vulnerable = false;
+                    io.emit("ghost respawn", state2.id);
                     state.score += 100;
                   }
 
