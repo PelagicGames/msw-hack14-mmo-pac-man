@@ -15,6 +15,7 @@ const SPEED = 4;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
+const PLAYER_BUFFER = 4;
 
 setInterval(function(){
   let states = {};
@@ -63,29 +64,28 @@ setInterval(function(){
         state.y = 0;
       }
 
-      var playerCentreX = state.x + 16;
-      var playerCentreY = state.y + 16;
-      var playerLeftEdge = state.x;
-      var playerRightEdge = state.x + 32;
-      var playerTopEdge = state.y;
-      var playerBottomEdge = state.y +32;
+      var playerCentreX = state.x + (PLAYER_WIDTH / 2);
+      var playerCentreY = state.y + (PLAYER_WIDTH / 2);
+      var playerLeftEdge = state.x + PLAYER_BUFFER;
+      var playerRightEdge = state.x + PLAYER_WIDTH - PLAYER_BUFFER;
+      var playerTopEdge = state.y + PLAYER_BUFFER;
+      var playerBottomEdge = state.y + PLAYER_WIDTH - PLAYER_BUFFER;
 
       // // Check for walls to the left
-      console.log(pixelToGrid(playerLeftEdge) + ',' + pixelToGrid(playerCentreY));
-      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if (isWall(playerLeftEdge, playerCentreY)){
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall to the right
-      if (isWall(pixelToGrid(playerRightEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if (isWall(playerRightEdge, playerCentreY)){
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall above
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerTopEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerTopEdge)){
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
       // Check for a wall below
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerBottomEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerBottomEdge)){
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
 
       if (state.x > oldX) {
