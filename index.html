@@ -51,6 +51,7 @@
         var socket = io();
         var id = '';
         var maze = false;
+        var playertype = "pacman";
 
         $(document).ready(function() {
           $(document).keydown(function(e) {
@@ -78,33 +79,31 @@
           })
           
           $(document).on('click', function(e) {
-              var xOffset = (e.pageX - 480) / 960;
-              var yOffset = (e.pageY - 320) / 640;
-              console.log(xOffset, yOffset)
+            var xOffset = (e.pageX - 480) / 960;
+            var yOffset = (e.pageY - 352) / 704;
 
-              if ((Math.abs(xOffset) > Math.abs(yOffset)) && (xOffset > 0)) {
-                socket.emit('left', 0);
-                socket.emit('right', 1);
-                socket.emit('up', 0);
-                socket.emit('down', 0)
-              } else if ((Math.abs(xOffset) > Math.abs(yOffset)) && (xOffset < 0)) {
-                socket.emit('right', 0);
-                socket.emit('left', 1);
-                socket.emit('up', 0);
-                socket.emit('down', 0)
-              } else if ((Math.abs(xOffset) < Math.abs(yOffset)) && (yOffset > 0)) {
-                socket.emit('left', 0);
-                socket.emit('right', 0);
-                socket.emit('up', 0)
-                socket.emit('down', 1);
-              } else if ((Math.abs(xOffset) < Math.abs(yOffset)) && (xOffset < 0)) {
-                socket.emit('left', 0);
-                socket.emit('right', 0);
-                socket.emit('down', 0);
-                socket.emit('up', 1)
-              }
-          })
-          ;
+            if ((Math.abs(xOffset) > Math.abs(yOffset)) && (xOffset > 0)) {
+              socket.emit('left', 0);
+              socket.emit('right', 1);
+              socket.emit('up', 0);
+              socket.emit('down', 0)
+            } else if ((Math.abs(xOffset) > Math.abs(yOffset)) && (xOffset < 0)) {
+              socket.emit('right', 0);
+              socket.emit('left', 1);
+              socket.emit('up', 0);
+              socket.emit('down', 0)
+            } else if ((Math.abs(xOffset) < Math.abs(yOffset)) && (yOffset > 0)) {
+              socket.emit('left', 0);
+              socket.emit('right', 0);
+              socket.emit('up', 0)
+              socket.emit('down', 1);
+            } else if ((Math.abs(xOffset) < Math.abs(yOffset)) && (xOffset < 0)) {
+              socket.emit('left', 0);
+              socket.emit('right', 0);
+              socket.emit('down', 0);
+              socket.emit('up', 1)
+            }
+          });
         });
 
         socket.on('connect', function(){
@@ -113,6 +112,12 @@
         });
 
         socket.on('init', function(state){
+          if (state.id !== id) {
+            return;
+          }
+
+          playertype = state.type;
+
           let img = document.createElement('img');
           img.src = state.type + ".png";
           img.id = id;
@@ -136,6 +141,7 @@
             var canvas = document.getElementById("myCanvas");
             var ctx = canvas.getContext("2d");
             ctx.fillStyle = "#0000FF";
+
             for (var i = 0; i < 30; i++){
               for (var j = 0; j < 22; j++){
                 if (newMaze[j][i] === 1){
@@ -144,6 +150,7 @@
                 else if (newMaze[j][i] === 0) {
                   let img = document.createElement('img');
                   img.src = "pellet.png";
+                  img.id = "pellet-" + j + "," + i;
                   img.width = 10;
                   img.height = 10;
                   img.style.position = "absolute";
@@ -151,14 +158,39 @@
                   img.style.top = 32*j + 11 + "px";
                   $('body')[0].appendChild(img);
                 }
-                else {
+                else if (newMaze[j][i] === -1) {
+                  let img = document.createElement('img');
+                  img.src = "pellet.png";
+                  img.id = "pellet-" + j + "," + i;
+                  img.width = 10;
+                  img.height = 10;
+                  img.style.position = "absolute";
+                  img.style.left = 32*i + 11 + "px";
+                  img.style.top = 32*j + 11 + "px";
+                  img.style.visibility = "hidden";
+                  $('body')[0].appendChild(img);
+                }
+                else if (newMaze[j][i] === 2) {
                   let img = document.createElement('img');
                   img.src = "power.png";
+                  img.id = "power-" + j + "," + i;
                   img.width = 20;
                   img.height = 20;
                   img.style.position = "absolute";
                   img.style.left = 32*i + 6 + "px";
                   img.style.top = 32*j + 6 + "px";
+                  $('body')[0].appendChild(img);
+                }
+                else if (newMaze[j][i] === -2) {
+                  let img = document.createElement('img');
+                  img.src = "power.png";
+                  img.id = "power-" + j + "," + i;
+                  img.width = 20;
+                  img.height = 20;
+                  img.style.position = "absolute";
+                  img.style.left = 32*i + 6 + "px";
+                  img.style.top = 32*j + 6 + "px";
+                  img.style.visibility = "hidden";
                   $('body')[0].appendChild(img);
                 }
               }
@@ -169,8 +201,6 @@
 
         socket.on('state', function(states){
           for (var key in states) {
-            // TODO: check for special key for pellets and power pills, and make them visible/invisible using
-            // img.style.visibility = ""/"hidden";
             if (states.hasOwnProperty(key)) {
               let state = states[key];
 
@@ -201,6 +231,7 @@
             }
           }
         });
+
         socket.on('score', function(scores) {
           for (var key in scores) {
             if (scores.hasOwnProperty(key)) {
@@ -209,6 +240,74 @@
               if ($('#' + key)[0]) {
                 $('#' + key)[0].innerText = score;
               }
+            }
+          }
+        });
+        socket.on('collect', function(pos) {
+          if ($('[id="pellet-' + pos[0] + ',' + pos[1] + '"]')[0]) {
+            $('[id="pellet-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
+          }
+        });
+
+        socket.on('respawn pellet', function(x, y) {
+          if ($('[id="pellet-' + x + ',' + y + '"]')[0]) {
+            $('[id="pellet-' + x + ',' + y + '"]')[0].style.visibility = "";
+          }
+        });
+
+        socket.on('collect power', function(pos) {
+          if ($('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0]) {
+            $('[id="power-' + pos[0] + ',' + pos[1] + '"]')[0].style.visibility = "hidden";
+          }
+
+          let ghosts = $('[src="ghost.png"]');
+          let other_ghosts = $('[src="other_ghost.png"]');
+
+          for (var index = 0; index < ghosts.length; index++) {
+            ghosts[index].src = "ghost_vulnerable.png";
+          }
+
+          for (var index = 0; index < other_ghosts.length; index++) {
+            if (playertype === "pacman") {
+              other_ghosts[index].src = "ghost_vulnerable.png";
+            } else {
+              other_ghosts[index].src = "other_ghost_vulnerable.png";
+            }
+          }
+        });
+
+        socket.on('respawn power', function(x, y) {
+          if ($('[id="power-' + x + ',' + y + '"]')[0]) {
+            $('[id="power-' + x + ',' + y + '"]')[0].style.visibility = "";
+
+            let ghosts = $('[src="ghost_vulnerable.png"]');
+            let other_ghosts = $('[src="other_ghost_vulnerable.png"]');
+
+            for (var index = 0; index < ghosts.length; index++) {
+              ghosts[index].src = "ghost.png";
+            }
+
+            for (var index = 0; index < other_ghosts.length; index++) {
+              other_ghosts[index].src = "other_ghost.png";
+            }
+          }
+        });
+
+        socket.on('ghost respawn', function(id) {
+          let ghosts = $('[src="ghost_vulnerable.png"]');
+          let other_ghosts = $('[src="other_ghost_vulnerable.png"]');
+
+          for (var index = 0; index < ghosts.length; index++) {
+            if (ghosts[index].id == id) {
+              ghosts[index].src = "ghost.png";
+              return;
+            }
+          }
+
+          for (var index = 0; index < other_ghosts.length; index++) {
+            if (other_ghosts[index].id == id) {
+              other_ghosts[index].src = "other_ghost.png";
+              return;
             }
           }
         });

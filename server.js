@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 
+var power = false
 var port = process.env.PORT || 8080;
 
 app.get('/', function(req, res){
@@ -12,13 +13,29 @@ app.get('/', function(req, res){
 app.use(express.static(path.join(__dirname, 'public')));
 
 const SPEED = 4;
+const GHOST_SPEED = 6;
 const PLAYER_WIDTH = 32;
 const HEIGHT = 702;
 const WIDTH = 960;
+const PLAYER_BUFFER = 0;
+const PELLET_TIMEOUT = 15000;
+const POWER_TIMEOUT = 30000;
+
+function respawn_pellet(x, y) {
+  io.emit("respawn pellet", x, y)
+  maze[x][y] = 0
+}
+
+function respawn_power(x, y) {
+  io.emit("respawn power", x, y)
+  maze[x][y] = 2
+  power = false
+}
 
 setInterval(function(){
   let states = {};
   let connected = io.sockets.clients().connected;
+  let oldPower = power;
 
   for (var key in connected) {
     if (connected.hasOwnProperty(key)) {
@@ -32,20 +49,44 @@ setInterval(function(){
       let oldY = state.y;
 
       if (connected[key].left === 1) {
-        state.x -= SPEED;
+        if (state.x <= 0) {
+          state.x = 928
+        }
+
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
+          state.x -= SPEED;
+        } else {
+          state.x -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].right === 1) {
-        state.x += SPEED;
+        if (state.x >= 928) {
+          state.x = 0
+        }
+
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
+          state.x += SPEED;
+        } else {
+          state.x += GHOST_SPEED;
+        }
       }
 
       if (connected[key].up === 1) {
-        state.y -= SPEED;
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
+          state.y -= SPEED;
+        } else {
+          state.y -= GHOST_SPEED;
+        }
       }
 
       if (connected[key].down === 1) {
-        state.y += SPEED;
-      }
+        if (((state.type === "pacman") && (!power)) || ((state.type === "ghost") && (power))){
+          state.y += SPEED;
+        } else {
+          state.y += GHOST_SPEED;
+        }
+     }
 
       if (state.x + PLAYER_WIDTH > WIDTH) {
         state.x = WIDTH - PLAYER_WIDTH;
@@ -63,29 +104,76 @@ setInterval(function(){
         state.y = 0;
       }
 
-      var playerCentreX = state.x + 16;
-      var playerCentreY = state.y + 16;
-      var playerLeftEdge = state.x;
-      var playerRightEdge = state.x + 32;
-      var playerTopEdge = state.y;
-      var playerBottomEdge = state.y +32;
+      var playerCentreX = state.x + (PLAYER_WIDTH / 2);
+      var playerCentreY = state.y + (PLAYER_WIDTH / 2);
+      var playerLeftEdge = state.x + PLAYER_BUFFER;
+      var playerRightEdge = state.x + PLAYER_WIDTH - PLAYER_BUFFER;
+      var playerTopEdge = state.y + PLAYER_BUFFER;
+      var playerBottomEdge = state.y + PLAYER_WIDTH - PLAYER_BUFFER;
 
-      // // Check for walls to the left
-      console.log(pixelToGrid(playerLeftEdge) + ',' + pixelToGrid(playerCentreY));
-      if (isWall(pixelToGrid(playerLeftEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if ((state.type === "pacman") && (isPellet(playerCentreX, playerCentreY))) {
+        state.score += 10;
+        scores.pacmans += 10;
+
+        let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
+        maze[pos[0]][pos[1]] = -1;
+
+        setTimeout(respawn_pellet, PELLET_TIMEOUT, pos[0], pos[1]);
+
+        io.emit('collect', pos);
       }
+
+      if (power === false) {
+        if ((state.type === "pacman") && (isPowerPill(playerCentreX, playerCentreY))) {
+          state.score += 100;
+          scores.pacmans += 100;
+
+          let pos = [Math.floor(playerCentreY / PLAYER_WIDTH), Math.floor(playerCentreX / PLAYER_WIDTH)];
+          maze[pos[0]][pos[1]] = -2;
+
+          power = true;
+          setTimeout(respawn_power, POWER_TIMEOUT, pos[0], pos[1]);
+
+          io.emit('collect power', pos);
+        }
+      }
+
+      // Check for walls to the left
+      if (isWall(playerLeftEdge, playerCentreY)) {
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
+      }
+
       // Check for a wall to the right
-      if (isWall(pixelToGrid(playerRightEdge), pixelToGrid(playerCentreY))){
-        console.log("WALL!");
+      if (isWall(playerRightEdge, playerCentreY)) {
+        state.x = Math.floor(playerCentreX / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
+
       // Check for a wall above
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerTopEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerTopEdge)) {
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
       }
+
       // Check for a wall below
-      if (isWall(pixelToGrid(playerCentreX), pixelToGrid(playerBottomEdge))){
-        console.log("WALL!");
+      if (isWall(playerCentreX, playerBottomEdge)) {
+        state.y = Math.floor(playerCentreY / PLAYER_WIDTH) * PLAYER_WIDTH;
+      }
+
+      // Teleport us away if we've been sucked into a wall
+      if (isWall(playerCentreX, playerCentreY)){
+        let placed = false;
+        let xSpawn = 0;
+        let ySpawn = 0;
+
+        while (!placed) {
+          xSpawn = Math.floor(Math.random() * WIDTH / PLAYER_WIDTH) * PLAYER_WIDTH;
+          ySpawn = Math.floor(Math.random() * HEIGHT / PLAYER_WIDTH) * PLAYER_WIDTH;
+
+          if (!isWall(xSpawn, ySpawn)) {
+            placed = true;
+          }
+        }
+        state.x = xSpawn;
+        state.y = ySpawn;
       }
 
       if (state.x > oldX) {
@@ -96,6 +184,22 @@ setInterval(function(){
         state.angle = 90;
       } else if (state.y < oldY) {
         state.angle = 270;
+      }
+    }
+  }
+
+  if (power !== oldPower) {
+    for (var key in connected) {
+      if (connected.hasOwnProperty(key)) {
+        if (!connected[key].init_called) {
+          continue;
+        }
+
+        let state = connected[key].state;
+
+        if (state.type === "ghost") {
+          state.vulnerable = true;
+        }
       }
     }
   }
@@ -136,35 +240,50 @@ setInterval(function(){
                   }
                 }
 
-                if (state.type === "pacman") {
-                  state.x = xSpawn;
-                  state.y = ySpawn;
-                } else {
-                  state2.score += 100;
-                  state2.x = xSpawn;
-                  state2.y = ySpawn;
-                }
+                if ((power) &&
+                    (state.type !== state2.type) &&
+                    ((state.type === "ghost") && (state.vulnerable)) ||
+                    ((state2.type === "ghost") && (state2.vulnerable))) {
+                  if (state.type === "ghost") {
+                    state.x = xSpawn;
+                    state.y = ySpawn;
+                    state.vulnerable = false;
+                    io.emit("ghost respawn", state.id);
+                    state2.score += 100;
+                  } else {
+                    state2.x = xSpawn;
+                    state2.y = ySpawn;
+                    state2.vulnerable = false;
+                    io.emit("ghost respawn", state2.id);
+                    state.score += 100;
+                  }
 
-                scores.ghosts += 100;
+                  scores.pacmans += 100;
+                } else {
+                  if (state.type === "pacman") {
+                    state.x = xSpawn;
+                    state.y = ySpawn;
+                    state2.score += 250;
+                  } else {
+                    state2.x = xSpawn;
+                    state2.y = ySpawn;
+                    state.score += 250;
+                  }
+
+                  scores.ghosts += 250;
+                }
               }
             }
           }
         }
-
-        // TODO: add collision detection for pellets and power pills
       }
     }
   }
 
-  // TODO: add pellets and power pills under a special key in states
   io.emit('state', states);
   io.emit('score', scores);
 }, 50);
 
-// TODO: create a repeating function to add pellets and power pills
-// (probably as a Boolean matrix indicating whether a pellet is present at a given (row, column))
-
-// TODO: create a function to create the initial maze
 var maze = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -175,9 +294,9 @@ var maze = [
   [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
   [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
   [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
   [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -208,6 +327,7 @@ io.on('connection', function(socket){
   socket.state.type = "pacman";
   socket.state.score = 0;
   socket.state.id = socket.id;
+  socket.state.vulnerable = false;
 
   socket.on('disconnect', function(){
     console.log('User ' + socket.id + ' disconnected');
@@ -237,7 +357,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('pre_init', function(){
-    // TODO: Randomise start position, or maybe try to start in a safe location
     let placed = false;
     let xSpawn = 0;
     let ySpawn = 0;
@@ -308,6 +427,14 @@ http.listen(port, function(){
 
 function isWall(xPos, yPos) {
   return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 1);
+}
+
+function isPellet(xPos, yPos) {
+  return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 0);
+}
+
+function isPowerPill(xPos, yPos) {
+  return (maze[Math.floor(yPos / PLAYER_WIDTH)][Math.floor(xPos / PLAYER_WIDTH)] === 2);
 }
 
 function pixelToGrid(pixel){
