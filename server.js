@@ -32,16 +32,10 @@ setInterval(function(){
       let oldY = state.y;
 
       if (connected[key].left === 1) {
-        if (state.x === 0) {
-          state.x = 928
-        }
         state.x -= SPEED;
       }
 
       if (connected[key].right === 1) {
-        if (state.x === 928) {
-          state.x = 0
-        }
         state.x += SPEED;
       }
 
